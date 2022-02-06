@@ -1,11 +1,21 @@
 import time
-import os, sys
+import os
 
-def listDir(directory,intervall):
+def listDir(directory,interval):
     tree = os.walk(directory)
-    li = []
-    
+    res = []
+    timeframe = time.time() - interval * 3600
 
-directory = input("Verzeichnis angeben")
-intervall = int(input("Zeitintervall angeben"))
-print(listDir(directory,intervall))
+    for path,tmp,files in tree:
+        for f in files:
+            filepath = os.path.normcase(os.path.join(path,f))
+            filetime = os.path.getmtime(filepath)
+            if filetime > timeframe:
+                res.append((filetime,filepath))
+
+    for t,path in res:
+        print("{} {}".format(path, time.ctime(t)))
+
+directory = input("Verzeichnis angeben: ")
+interval = int(input("Zeitintervall in Stunden angeben: "))
+listDir(directory,interval)
